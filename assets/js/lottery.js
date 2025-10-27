@@ -26,7 +26,7 @@ function stopBlinking() {
 
 // Función principal de sorteo
 lotteryButton.addEventListener("click", () => {
-    const url = "https://wscigna.gscloud.us/ws/suscripcion/lottery";
+    const url = "https://wscigna.gscloud.us/ws/suscripcion/lotterykickoff";
 
     // 1. Limpiar el texto y detener cualquier animación previa
     if (intervalId) {
