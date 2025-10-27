@@ -1,0 +1,196 @@
+@import url('https://fonts.googleapis.com/css2?family=Shadows+Into+Light&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap');
+
+* {
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Montserrat', Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-color: #4a2659;
+    color: #333;
+    padding: 20px;
+}
+
+.container {
+    background:
+        /* Imagen de fondo desde assets */
+        url('../image/kick_off_ticker.webp') no-repeat center center fixed,
+        /* Gradiente de respaldo */
+        linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d);
+    text-align: center;
+    padding: 10px;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    max-width: 1024px;
+    width: 100%;
+    height: 654px;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 8px;
+    background: linear-gradient(90deg, #d4af37, #ffd700, #d4af37);
+}
+
+h1 {
+    font-weight: 900;
+    font-size: 6rem;
+    color: #d4af37;
+    margin: 1.5rem 0;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+    font-family: 'Shadows Into Light', cursive;
+    margin-bottom: 2rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 120px; /* Asegura espacio suficiente */
+    transition: all 0.3s ease; /* Suaviza los cambios - NUEVO */
+}
+
+h2 {
+    font-size: 2.2rem;
+    color: #db7d12;
+    margin-bottom: 1rem;
+    font-weight: 700;
+    margin: 8rem 0 3rem;
+}
+
+button {
+    background: linear-gradient(to bottom, #d97706, #f59e0b);
+    color: white;
+    padding: 20px 40px;
+    font-size: 2.5rem;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    margin: 2rem 0;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    font-weight: 700;
+    letter-spacing: 1px;
+    width: auto;
+    display: inline-block;
+    max-width: 80%;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+button:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+    background: linear-gradient(to bottom, #d97706, #bf6906);
+}
+
+button:active {
+    transform: translateY(1px);
+}
+
+/* Animación MEJORADA para el ganador - VERSIÓN MÁS VISIBLE */
+.parpadea {
+    animation-name: parpadeo-mejorado;
+    animation-duration: 0.6s; /* Más rápido para mejor visibilidad */
+    animation-timing-function: ease-in-out;
+    animation-iteration-count: infinite;
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    will-change: transform, opacity; /* Optimización de rendimiento - NUEVO */
+}
+
+@keyframes parpadeo-mejorado {
+    0% {
+        opacity: 1;
+        transform: scale(1);
+        color: #d4af37;
+        text-shadow: 0 0 20px rgba(212, 175, 55, 0.8); /* Más intenso - NUEVO */
+    }
+
+    50% {
+        opacity: 0.3; /* Contraste más marcado - NUEVO */
+        transform: scale(1.05); /* Escala más notable - NUEVO */
+        color: #ffd700;
+        text-shadow: 0 0 30px rgba(255, 215, 0, 1); /* Más intenso - NUEVO */
+    }
+
+    100% {
+        opacity: 1;
+        transform: scale(1);
+        color: #d4af37;
+        text-shadow: 0 0 20px rgba(212, 175, 55, 0.8); /* Más intenso - NUEVO */
+    }
+}
+
+/* VERSIÓN ALTERNATIVA MÁS SIMPLE - Descomenta si la anterior no funciona */
+/*
+.parpadea {
+    animation: parpadeo-simple 0.5s infinite alternate;
+}
+
+@keyframes parpadeo-simple {
+    from {
+        opacity: 1;
+        transform: scale(1);
+        text-shadow: 0 0 10px gold;
+    }
+    to {
+        opacity: 0.4;
+        transform: scale(1.08);
+        text-shadow: 0 0 20px orange;
+    }
+}
+*/
+
+/* Responsive */
+@media (max-width: 768px) {
+    h1 {
+        font-size: 2.5rem;
+        height: 5rem;
+    }
+
+    h2 {
+        font-size: 1.8rem;
+    }
+
+    button {
+        font-size: 2rem;
+        padding: 15px 30px;
+        max-width: 90%;
+    }
+
+    .container {
+        padding: 20px 15px;
+    }
+}
+
+@media (max-width: 480px) {
+    h1 {
+        font-size: 2rem;
+        height: 4rem;
+    }
+
+    h2 {
+        font-size: 1.5rem;
+    }
+
+    button {
+        font-size: 1.5rem;
+        padding: 12px 25px;
+        max-width: 95%;
+    }
+}
