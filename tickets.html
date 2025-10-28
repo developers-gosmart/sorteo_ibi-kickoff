@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Estado de Servicios</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background-color: #f5f5f5;
+            overflow-x: auto;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+        }
+
+        .buttons-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+            /* Ancho para 10 botones */
+            max-width: 1090px;
+            margin: 0 auto;
+            width: auto;
+            overflow-x: hidden;
+            padding: 10px;
+            /* Estilo para el mensaje de carga/error */
+            text-align: center;
+            font-size: 1.2em;
+            color: #555;
+            min-height: 100px;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .service-button {
+            min-width: 100px;
+            width: 100px;
+            height: 60px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            user-select: none;
+        }
+
+        .service-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .service-button.gray {
+            background-color: #cccccc;
+            color: #333;
+        }
+
+        .service-button.green {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        .service-code {
+            font-size: 18px;
+        }
+
+        .service-status {
+            font-size: 12px;
+            margin-top: 5px;
+        }
+
+        .legend {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            /* Aumento el espacio para el total */
+            margin-top: 30px;
+            font-size: 1.1em;
+            font-weight: bold;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 4px;
+        }
+
+        .legend-gray {
+            background-color: #cccccc;
+        }
+
+        .legend-green {
+            background-color: #4CAF50;
+        }
+
+        /* --- Modal Styles --- */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1001;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.6);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            padding: 30px;
+            border: 1px solid #888;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 400px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+            position: relative;
+            text-align: center;
+        }
+
+        .close-button {
+            color: #aaa;
+            font-size: 32px;
+            font-weight: bold;
+            position: absolute;
+            top: 5px;
+            right: 15px;
+            line-height: 20px;
+        }
+
+        .close-button:hover,
+        .close-button:focus {
+            color: #000;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .status-selector {
+            margin: 20px 0;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .update-button {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+            margin-top: 20px;
+        }
+
+        .update-button:hover {
+            background-color: #0056b3;
+        }
+
+        .modal-message {
+            margin-top: 15px;
+            font-weight: bold;
+            min-height: 20px;
+        }
+
+        /* --- Switch Styles --- */
+        .switch-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .switch-label {
+            font-weight: bold;
+            font-size: 1.1em;
+            color: #555;
+        }
+
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 34px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 34px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked+.slider {
+            background-color: #4CAF50;
+            /* Verde cuando Registrado */
+        }
+
+        input:focus+.slider {
+            box-shadow: 0 0 1px #4CAF50;
+        }
+
+        input:checked+.slider:before {
+            transform: translateX(26px);
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Tickets</h1>
+
+    <div class="buttons-container" id="buttonsContainer">
+        <!-- Los botones se generarán dinámicamente con JavaScript o se mostrará un mensaje de carga/error -->
+    </div>
+
+    <div class="legend">
+        <div class="legend-item">
+            <div class="legend-color legend-gray"></div>
+            <span>Registrar (<span id="countPorRegistrar">0</span>)</span>
+        </div>
+        <div class="legend-item">
+            <div class="legend-color legend-green"></div>
+            <span>Registrados (<span id="countRegistrados">0</span>)</span>
+        </div>
+    </div>
+
+    <!-- Modal para cambiar estatus -->
+    <div id="statusModal" class="modal">
+        <div class="modal-content">
+            <span class="close-button" onclick="closeModal()">&times;</span>
+            <h2>Cambiar Estatus de Ticket</h2>
+            <p>Ticket ID: <strong id="modalTicketCode"></strong></p>
+
+            <div class="status-selector">
+                <span class="switch-label">Estatus Actual: <strong id="currentStatusText"></strong></span>
+
+                <div class="switch-container">
+                    <span style="font-size: 1.1em; color: #555;">Registrar</span>
+                    <label class="switch">
+                        <!-- Checkbox oculto, su estado (checked) controla el switch -->
+                        <input type="checkbox" id="statusSwitch">
+                        <span class="slider"></span>
+                    </label>
+                    <span style="font-size: 1.1em; color: #555;">Registrado</span>
+                </div>
+            </div>
+
+            <button id="updateStatusButton" class="update-button">Actualizar Estatus</button>
+            <p id="modalMessage" class="modal-message"></p>
+        </div>
+    </div>
+
+    <script>
+        // Almacenamiento global de los servicios para poder actualizar la UI
+        let currentServices = [];
+        let currentTicketCode = null; // Para rastrear el ticket actual en la modal
+
+        // --- Funciones del Modal ---
+
+        function openModal(service) {
+            const modal = document.getElementById('statusModal');
+            const codeElement = document.getElementById('modalTicketCode');
+            const statusSwitch = document.getElementById('statusSwitch');
+            const currentStatusText = document.getElementById('currentStatusText');
+            const messageElement = document.getElementById('modalMessage');
+
+            // 1. Establecer el ticket actual
+            currentTicketCode = service.code;
+
+            // 2. Poblar la modal y el Switch
+            codeElement.textContent = service.code;
+
+            // El estado del switch es TRUE si el evento es 1 (Registrado)
+            const isActive = service.evento === 1;
+            statusSwitch.checked = isActive;
+            currentStatusText.textContent = isActive ? 'Registrado' : 'Registrar';
+
+            // 3. Limpiar y mostrar la modal
+            messageElement.textContent = '';
+            modal.style.display = 'flex';
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('statusModal');
+            modal.style.display = 'none';
+            currentTicketCode = null; // Limpiar el ticket actual
+        }
+
+        // Listener para cerrar la modal al hacer clic fuera del contenido
+        window.onclick = function (event) {
+            const modal = document.getElementById('statusModal');
+            if (event.target == modal) {
+                closeModal();
+            }
+        }
+
+        // --- Función de Actualización de Estatus (API Simulado) y Contador ---
+
+        /**
+         * Actualiza los contadores de la leyenda.
+         */
+        function updateLegendCounts() {
+            let countRegistrados = 0;
+            let countPorRegistrar = 0;
+
+            currentServices.forEach(service => {
+                // Asumimos que 'evento' es 1 para Registrado y 0 para Registrar
+                if (service.evento === 1) {
+                    countRegistrados++;
+                } else {
+                    countPorRegistrar++;
+                }
+            });
+
+            document.getElementById('countRegistrados').textContent = countRegistrados;
+            document.getElementById('countPorRegistrar').textContent = countPorRegistrar;
+        }
+
+        async function updateTicketStatus(ticketCode, newStatus) {
+            // URL de actualización real
+            const updateUrl = "https://wscigna.gscloud.us/ws/kickoff/event";
+
+            const messageElement = document.getElementById('modalMessage');
+            messageElement.textContent = 'Actualizando...';
+            messageElement.style.color = '#007bff';
+
+            // Cuerpo de la petición JSON
+            const payload = {
+                id: ticketCode,
+                evento: newStatus
+            };
+
+            console.log(`[API Call] Enviando a ${updateUrl}:`, payload);
+
+            try {
+                // Llamada real a la API con fetch
+                const response = await fetch(updateUrl, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                
+                const result = await response.json();
+
+                // Verificar la respuesta del servicio (asumiendo que code 200 es éxito)
+                if (response.ok && result.code === 200) {
+                    messageElement.textContent = `Éxito: Ticket ${ticketCode} actualizado.`;
+                    messageElement.style.color = 'green';
+    
+                    // Actualizar la interfaz principal
+                    refreshUI(ticketCode, newStatus);
+                    setTimeout(closeModal, 1500); // Cerrar después de mostrar el éxito
+
+                } else {
+                    // Manejar errores HTTP o de lógica del servicio
+                    const errorMessage = result.message || `Fallo en el servicio. Código: ${result.code}`;
+                    throw new Error(errorMessage);
+                }
+
+            } catch (error) {
+                console.error('Error al actualizar estatus:', error);
+                messageElement.textContent = `Error al actualizar: ${error.message || 'Error de conexión.'}`;
+                messageElement.style.color = 'red';
+            }
+        }
+
+        // Función que maneja el clic del botón de actualización
+        function handleUpdate() {
+            const statusSwitch = document.getElementById('statusSwitch');
+
+            // Si el switch está chequeado (true) el nuevo estatus es 1 (Registrado), de lo contrario es 0 (Registrar)
+            const newStatus = statusSwitch.checked ? 1 : 0;
+
+            if (currentTicketCode !== null) {
+                updateTicketStatus(currentTicketCode, newStatus);
+            }
+        }
+
+        // Asignar el listener al botón de la modal (después de que el DOM esté cargado)
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('updateStatusButton').addEventListener('click', handleUpdate);
+
+            // Opcional: listener para actualizar el texto al cambiar el switch
+            document.getElementById('statusSwitch').addEventListener('change', (event) => {
+                const currentStatusText = document.getElementById('currentStatusText');
+                currentStatusText.textContent = event.target.checked ? 'Registrado' : 'Registrar';
+            });
+        });
+
+
+        // --- UI y Data Management ---
+
+        // Función para refrescar el color y texto del botón en la interfaz principal
+        function refreshUI(ticketCode, newStatus) {
+            // Encontrar el servicio en la lista global y actualizarlo
+            const serviceIndex = currentServices.findIndex(s => s.code === ticketCode);
+            if (serviceIndex !== -1) {
+                currentServices[serviceIndex].evento = newStatus;
+            }
+
+            // Encontrar el botón en el DOM
+            const button = document.querySelector(`.service-button[data-code="${ticketCode}"]`);
+            if (button) {
+                const isActive = newStatus === 1;
+
+                // 1. Actualizar clases de color
+                button.classList.toggle('green', isActive);
+                button.classList.toggle('gray', !isActive);
+
+                // 2. Actualizar texto de estado
+                const statusElement = button.querySelector('.service-status');
+                if (statusElement) {
+                    statusElement.textContent = isActive ? 'Registrado' : 'Registrar';
+                }
+            }
+
+            // 3. Actualizar los contadores de la leyenda
+            updateLegendCounts();
+        }
+
+        /**
+         * Función que crea los botones, obteniendo los datos desde el servicio.
+         */
+        async function createButtons() {
+            const listUrl = "https://wscigna.gscloud.us/ws/kickoff/list";
+            const container = document.getElementById('buttonsContainer');
+            container.innerHTML = 'Cargando tickets...'; // Mensaje de carga inicial
+
+            try {
+                // 1. Realizar la petición a la API
+                const response = await fetch(listUrl);
+
+                if (!response.ok) {
+                    throw new Error(`Error HTTP: ${response.status}`);
+                }
+
+                const result = await response.json();
+
+                // 2. Asignar los datos al almacenamiento global, usando la clave 'data'
+                if (result && Array.isArray(result.data)) {
+                    currentServices = result.data; 
+                } else {
+                    // Manejar el caso en que la respuesta tenga un código de error o no contenga 'data'
+                    if (result && result.code !== 200) {
+                        throw new Error(`Fallo en el servicio: ${result.message || 'Error desconocido'}`);
+                    }
+                    throw new Error("Formato de respuesta de API inválido o array de datos vacío.");
+                }
+
+                // 3. Limpiar el contenedor y proceder con la renderización
+                container.innerHTML = '';
+
+                // 4. Generar botones y adjuntar listeners
+                currentServices.forEach(service => {
+                    // Asumimos que el campo 'evento' indica el estado (1: Registrado, 0: Registrar)
+                    const isActive = service.evento === 1; 
+
+                    const button = document.createElement('button');
+                    button.className = `service-button ${isActive ? 'green' : 'gray'}`;
+
+                    // Asignar el código como atributo de datos para fácil identificación
+                    button.setAttribute('data-code', service.code);
+
+                    const codeElement = document.createElement('span');
+                    codeElement.className = 'service-code';
+                    codeElement.textContent = service.code;
+
+                    const statusElement = document.createElement('span');
+                    statusElement.className = 'service-status';
+                    statusElement.textContent = isActive ? 'Registrado' : 'Registrar';
+
+                    button.appendChild(codeElement);
+                    button.appendChild(statusElement);
+
+                    // Agregar evento de clic para abrir la modal
+                    button.addEventListener('click', () => {
+                        openModal(service);
+                    });
+
+                    container.appendChild(button);
+                });
+
+                // 5. Llamar a la actualización de la leyenda por primera vez
+                updateLegendCounts();
+
+            } catch (error) {
+                console.error('Error al cargar los tickets:', error);
+                // Mostrar un mensaje de error en la interfaz
+                container.innerHTML = `⚠️ Error al cargar tickets: ${error.message}.`;
+            }
+        }
+
+        // Inicializar la página
+        document.addEventListener('DOMContentLoaded', createButtons);
+    </script>
+</body>
+
+</html>

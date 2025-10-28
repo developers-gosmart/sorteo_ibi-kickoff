@@ -26,7 +26,7 @@ function stopBlinking() {
 
 // Función principal de sorteo
 lotteryButton.addEventListener("click", () => {
-    const url = "https://wscigna.gscloud.us/ws/suscripcion/lotterykickoff";
+    const url = "https://wscigna.gscloud.us/ws/kickoff/lotterykickoff";
 
     // 1. Limpiar el texto y detener cualquier animación previa
     if (intervalId) {
@@ -52,7 +52,7 @@ lotteryButton.addEventListener("click", () => {
 
                 // Mostrar el ganador real
                 if (data.code == 200) {
-                    winnerElement.textContent = truncarTexto(`${data.data.nombre} ${data.data.apellido}`);
+                    winnerElement.textContent = `${data.data.nombre} ${data.data.apellido}`;
                     startBlinking();
                 } else {
                     winnerElement.textContent = 'Error al obtener ganador';
@@ -71,10 +71,3 @@ lotteryButton.addEventListener("click", () => {
             lotteryButton.disabled = false;
         });
 });
-
-function truncarTexto(texto, maxCaracteres = 25) {
-    if (texto.length > maxCaracteres) {
-        return texto.substring(0, maxCaracteres) + '...';
-    }
-    return texto;
-}
