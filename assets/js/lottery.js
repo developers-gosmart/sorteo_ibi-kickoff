@@ -52,7 +52,7 @@ lotteryButton.addEventListener("click", () => {
 
                 // Mostrar el ganador real
                 if (data.code == 200) {
-                    winnerElement.textContent = `${data.data.nombre} ${data.data.apellido}`;
+                    winnerElement.textContent = `#${data.data.code}`;
                     startBlinking();
                 } else {
                     winnerElement.textContent = 'Error al obtener ganador';
