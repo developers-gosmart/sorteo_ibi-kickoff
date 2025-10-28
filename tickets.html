@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Estado de Servicios</title>
+    <title>Infinity Business & Insurance - Kick Off Transición 2026</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -112,7 +112,8 @@
 
         /* --- Modal Styles --- */
         .modal {
-            display: none;
+            /* CAMBIO CLAVE: Aseguramos que inicie oculto. openModal lo cambiará a 'flex' */
+            display: none; 
             position: fixed;
             z-index: 1001;
             left: 0;
@@ -121,9 +122,14 @@
             height: 100%;
             overflow: auto;
             background-color: rgba(0, 0, 0, 0.6);
-            display: flex;
+            /* Quitamos el display:flex de aquí, se aplica dinámicamente */
             justify-content: center;
             align-items: center;
+        }
+        
+        /* Regla de estilo para forzar la visualización como flex cuando se hace clic */
+        .modal.visible {
+            display: flex;
         }
 
         .modal-content {
@@ -322,12 +328,12 @@
 
             // 3. Limpiar y mostrar la modal
             messageElement.textContent = '';
-            modal.style.display = 'flex';
+            modal.style.display = 'flex'; // Usamos flex para centrar
         }
 
         function closeModal() {
             const modal = document.getElementById('statusModal');
-            modal.style.display = 'none';
+            modal.style.display = 'none'; // Ocultamos la modal
             currentTicketCode = null; // Limpiar el ticket actual
         }
 
@@ -361,7 +367,17 @@
             document.getElementById('countPorRegistrar').textContent = countPorRegistrar;
         }
 
-        async function updateTicketStatus(ticketCode, newStatus) {
+        async function updateTicketStatus(currentCode, newStatus) {
+            // 1. Buscar el objeto del ticket para obtener el ID
+            const ticket = currentServices.find(s => s.code === currentCode);
+            
+            if (!ticket) {
+                const messageElement = document.getElementById('modalMessage');
+                messageElement.textContent = `Error: No se encontró el ticket con código ${currentCode}.`;
+                messageElement.style.color = 'red';
+                return;
+            }
+
             // URL de actualización real
             const updateUrl = "https://wscigna.gscloud.us/ws/kickoff/event";
 
@@ -369,9 +385,9 @@
             messageElement.textContent = 'Actualizando...';
             messageElement.style.color = '#007bff';
 
-            // Cuerpo de la petición JSON
+            // 2. Cuerpo de la petición JSON (usando ticket.id)
             const payload = {
-                id: ticketCode,
+                id: ticket.id, // ¡Uso del ID numérico!
                 evento: newStatus
             };
 
@@ -389,11 +405,11 @@
 
                 // Verificar la respuesta del servicio (asumiendo que code 200 es éxito)
                 if (response.ok && result.code === 200) {
-                    messageElement.textContent = `Éxito: Ticket ${ticketCode} actualizado.`;
+                    messageElement.textContent = `Éxito: Ticket ${currentCode} actualizado.`;
                     messageElement.style.color = 'green';
     
                     // Actualizar la interfaz principal
-                    refreshUI(ticketCode, newStatus);
+                    refreshUI(currentCode, newStatus);
                     setTimeout(closeModal, 1500); // Cerrar después de mostrar el éxito
 
                 } else {
